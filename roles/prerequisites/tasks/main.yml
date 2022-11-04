@@ -1,0 +1,45 @@
+---
+
+# tasks file for prerequisites role:
+
+- name: Running the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Cloning weight tracker code from github repo
+  git:
+    repo: https://github.com/sdeshpande1107/bootcamp-app.git
+    dest: "{{ default_path }}"
+    clone: yes
+    update: no
+    
+- name: Downloading the latest version of node and npm
+  shell: curl -sL https://deb.nodesource.com/setup_14.x | sudo bash
+  args:
+    executable: /bin/bash
+
+- name: Installing node and npm
+  shell: apt install nodejs -y
+  become: yes
+  args:
+    executable: /bin/bash
+
+- name: Installing dependencies and frameworks
+  shell: npm install @hapi/hapi @hapi/bell @hapi/boom @hapi/cookie @hapi/inert @hapi/joi @hapi/vision dotenv@8 ejs@3 postgres@1
+  args:
+    executable: /bin/bash
+    chdir: "{{ default_path }}" 
+
+- name: Installing nodemon
+  shell: npm install --save-dev nodemon@2
+  args:
+    executable: /bin/bash
+    chdir: "{{ default_path }}"
+
+- name: copy .env file to the cloned repository
+  template: 
+    src: ./templates/.env.j2
+    dest: "{{ destination }}"
+    owner: azureuser
+    group: azureuser
+    mode: 0755

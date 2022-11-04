@@ -1,0 +1,10 @@
+---
+
+- name: Main yaml file to run the playbook to install weight-tracker application
+  hosts: webservers
+  become: yes
+  remote_user: "{{ user }}"
+  roles:
+    - prerequisites
+    - app_installation
+

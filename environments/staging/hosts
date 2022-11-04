@@ -1,0 +1,5 @@
+[webservers]
+
+server1 ansible_host="{{ load_balancer_ip }}" ansible_port=400 ansible_password="{{ password }}" ansible_user="{{ user }}"
+server2 ansible_host="{{ load_balancer_ip }}" ansible_port=401 ansible_password="{{ password }}" ansible_user="{{ user }}"
+server3 ansible_host="{{ load_balancer_ip }}" ansible_port=402 ansible_password="{{ password }}" ansible_user="{{ user }}"

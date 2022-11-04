@@ -1,0 +1,57 @@
+---
+# tasks file for app_installation
+
+- name: Install postgresql
+  become: true
+  apt:
+    name: "postgresql"
+    state: present
+    update_cache: yes
+
+- name: Install postgresql-client
+  become: true
+  apt:
+    name: "postgresql-client"
+    state: present
+    update_cache: yes
+  
+- name: Create database
+  shell: psql "user="{{ pg_username }}" password="{{ pg_password }}" host="{{ pg_host }}" port=5432 dbname="{{ database_name }}"" -c '\x' -c 'CREATE DATABASE weight_tracker;'
+  run_once: true
+  args:
+    executable: /bin/bash
+
+- name : Creating database and tables
+  shell: npm run initdb
+  args:
+    chdir: "{{ default_path }}"  
+    executable: /bin/bash
+
+- name: Installing pm2 to enable the application to run even after the server is restarted
+  become: true
+  shell: npm install pm2@latest -g
+  args:
+    executable: /bin/bash
+    chdir: "{{ default_path }}"
+
+- name: Starting the webservers
+  become: true
+  shell: pm2 start -f src/index.js
+  args:
+    executable: /bin/bash
+    chdir: "{{ default_path }}"
+
+- name: Enabling the webservers to run at startup
+  become: true
+  shell: pm2 startup
+  args:
+    executable: /bin/bash
+    chdir: "{{ default_path }}"
+
+- name: Starting the webservers
+  become: true
+  shell: pm2 save
+  args:
+    executable: /bin/bash
+    chdir: "{{ default_path }}"
+
